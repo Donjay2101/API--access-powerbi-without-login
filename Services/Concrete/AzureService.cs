@@ -25,8 +25,8 @@ namespace API.PowerBI.Services.Concrete
             {
                 var form = new Dictionary<string, string>();
                 form["grant_type"] = _config.Azure.GrantType;
-                form["username"] = _config.Azure.Username;
-                form["password"] = _config.Azure.Password;
+                //form["username"] = _config.Azure.Username;
+                //form["password"] = _config.Azure.Password;
                 form["client_id"] = _config.Azure.ClientID;
                 form["client_secret"] = _config.Azure.ClientSecret;
                 form["scope"] = string.Join(" ",_config.Azure.Scopes);

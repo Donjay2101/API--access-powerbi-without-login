@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha512-+NqPlbbtM1QqiK8ZAo4Yrj2c4lNQoGv8P79DPtKzj++l5jnN39rHA/xsqn8zE9l0uSoxaCdrOgFs6yjyfbBxSg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/powerbi-client/2.18.2/powerbi.min.js" integrity="sha512-zYg8edFyKJ6NjrCsaC/q35V3M4wByqLcd4yJihgJIAknN7XT9aLPB23TASrSMP1ndFq/koQHOwjlzZBvTkSe8g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  
+    <script>
+
+    
+
+    $(document).ready(function () {
+       $('#generateReport').click(function(){
+           var reportID=$('#reportID').val();
+           var workspaceID=$('#workspaceID').val();
+        var obj=`{"reportID":"${reportID}","workspaceID":"${workspaceID}"}`;
+            $.ajax({
+                url:`https://localhost:44337/api/Reports/GetReport?input=${obj}`,
+                method:"GET",
+                success:function(response){
+                    // Get models. models contains enums that can be used.
+                    var models = window['powerbi-client'].models;
+
+                    var config = {
+                        type: 'report',
+                        tokenType: models.TokenType.Embed,
+                        accessToken: response.embdedToken.token,
+                        embedUrl: response.embedUrl,
+                        id: response.id,
+                        permissions: models.Permissions.All,
+                        settings: {
+                            filterPaneEnabled: true,
+                            navContentPaneEnabled: true
+                        }
+                    };
+                    // Get a reference to the embedded report HTML element
+                    var reportContainer = $('#reportContainer')[0];
+
+                    // Embed the report and display it within the div container.
+                    powerbi.embed(reportContainer, config);
+                },
+                error:function(error){
+                    console.log(error);
+                },
+                complete:function(){
+                    console.log("completed");
+                }
+            });
+            
+            
+       });
+    });
+    </script>
+<style>
+    #reportContainer {
+        height: 600px;
+        width: 100%;
+        max-width: 2000px;
+    }
+</style>
+</head>
+
+<body>
+    <table>
+        <tbody>
+        <tr>
+            <td><label htmlFor="workspaceID">Workspace ID</label> </td>
+            <td><input type="text" name="workspaceID" id="workspaceID"></input> </td>
+        </tr>
+        <tr>
+            <td><label htmlFor="reportID">Report ID</label></td>
+            <td><input type="text" name="reportID" id="reportID"></input></td>
+        </tr>
+        <tr colspan="2">
+            <button  id="generateReport">Generate report</button>
+        </tr>
+        </tbody>
+    </table>
+    <div id="reportContainer"></div>
+</body>
+</html>
